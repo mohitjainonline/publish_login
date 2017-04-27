@@ -1458,7 +1458,7 @@ var routes = {
       debugger;
       if (_Auth2.default.isUserAuthenticated()) {
         var data = JSON.parse(_Auth2.default.getToken());
-        window.location.href = "http://localhost:8081?id=" + encodeURIComponent(data.login_id);
+        window.location.href = "https://sch-admin.herokuapp.com?id=" + encodeURIComponent(data.login_id);
       } else {
         callback(null, _HomePage2.default);
       }
