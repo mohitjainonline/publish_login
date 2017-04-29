@@ -856,23 +856,31 @@ exports.default = SignUpForm;
 },{"material-ui/Card":25,"material-ui/RaisedButton":33,"material-ui/TextField":41,"react":510,"react-router":422}],9:[function(require,module,exports){
 'use strict';
 
-var env = 'qa',
+var env = 'local',
     config = {
 	local: {
 		protocol: 'http',
-		rootApi: 'localhost:8085/api'
+		rootApi: 'localhost:8085/api',
+		rootApp: 'http://localhost:8080',
+		adminApp: 'http://localhost:8081'
 	},
 	qa: {
 		protocol: 'https',
-		rootApi: 'schmgm-nodeservices.herokuapp.com/api'
+		rootApi: 'schmgm-nodeservices.herokuapp.com/api',
+		rootApp: 'https://sch-login.herokuapp.com',
+		adminApp: 'https://sch-admin.herokuapp.com'
 	},
 	uat: {
 		protocol: 'https',
-		rootApi: 'schmgm-nodeservices.herokuapp.com/api'
+		rootApi: 'schmgm-nodeservices.herokuapp.com/api',
+		rootApp: 'https://sch-login.herokuapp.com',
+		adminApp: 'https://sch-admin.herokuapp.com'
 	},
 	live: {
 		protocol: 'https',
-		rootApi: 'schmgm-nodeservices.herokuapp.com/api'
+		rootApi: 'schmgm-nodeservices.herokuapp.com/api',
+		rootApp: 'https://sch-login.herokuapp.com',
+		adminApp: 'https://sch-admin.herokuapp.com'
 	}
 };
 
@@ -1064,6 +1072,7 @@ var LoginPage = function (_React$Component) {
 
       var _this = this;
       _UserService2.default.authenticate(formData).done(function (data) {
+        debugger;
         if (data.success == true) {
           // change the component-container state
           _this.setState({
@@ -1342,81 +1351,89 @@ var hubPage = function (_React$Component) {
 exports.default = hubPage;
 
 },{"react":510}],14:[function(require,module,exports){
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _UtilityServices = require("../../service/UtilityServices.jsx");
+
+var _UtilityServices2 = _interopRequireDefault(_UtilityServices);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Auth = function () {
-  function Auth() {
-    _classCallCheck(this, Auth);
-  }
-
-  _createClass(Auth, null, [{
-    key: 'authenticateUser',
-
-
-    /**
-     * Authenticate a user. Save a token string in Local Storage
-     *
-     * @param {string} token
-     */
-    value: function authenticateUser(token) {
-
-      localStorage.setItem('token', JSON.stringify(token));
+    function Auth() {
+        _classCallCheck(this, Auth);
     }
 
-    /**
-     * Check if a user is authenticated - check if a token is saved in Local Storage
-     *
-     * @returns {boolean}
-     */
+    _createClass(Auth, null, [{
+        key: "authenticateUser",
 
-  }, {
-    key: 'isUserAuthenticated',
-    value: function isUserAuthenticated() {
-      return localStorage.getItem('token') !== null;
-    }
 
-    /**
-     * Deauthenticate a user. Remove a token from Local Storage.
-     *
-     */
+        /**
+         * Authenticate a user. Save a token string in Local Storage
+         *
+         * @param {string} token
+         */
+        value: function authenticateUser(token) {
+            _UtilityServices2.default.setCookie("token", JSON.stringify(token), 30);
+            //localStorage.setItem('token', JSON.stringify(token));
+        }
 
-  }, {
-    key: 'deauthenticateUser',
-    value: function deauthenticateUser() {
-      localStorage.removeItem('token');
-    }
+        /**
+         * Check if a user is authenticated - check if a token is saved in Local Storage
+         *
+         * @returns {boolean}
+         */
 
-    /**
-     * Get a token value.
-     *
-     * @returns {string}
-     */
+    }, {
+        key: "isUserAuthenticated",
+        value: function isUserAuthenticated() {
+            return _UtilityServices2.default.getCookie("token") !== "";
+            //return localStorage.getItem('token') !== null;
+        }
 
-  }, {
-    key: 'getToken',
-    value: function getToken() {
-      return localStorage.getItem('token');
-    }
-  }]);
+        /**
+         * Deauthenticate a user. Remove a token from Local Storage.
+         *
+         */
 
-  return Auth;
+    }, {
+        key: "deauthenticateUser",
+        value: function deauthenticateUser() {
+            localStorage.removeItem('token');
+        }
+
+        /**
+         * Get a token value.
+         *
+         * @returns {string}
+         */
+
+    }, {
+        key: "getToken",
+        value: function getToken() {
+            return _UtilityServices2.default.getCookie("token");
+            //return localStorage.getItem('token');
+        }
+    }]);
+
+    return Auth;
 }();
 
 exports.default = Auth;
 
-},{}],15:[function(require,module,exports){
+},{"../../service/UtilityServices.jsx":2}],15:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _Base = require('./components/Base.jsx');
@@ -1447,42 +1464,46 @@ var _Auth = require('./modules/Auth');
 
 var _Auth2 = _interopRequireDefault(_Auth);
 
+var _config = require('./config/config.jsx');
+
+var _config2 = _interopRequireDefault(_config);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var routes = {
-  // base component (wrapper for the whole application).
-  component: _Base2.default,
-  childRoutes: [{
-    path: '/',
-    getComponent: function getComponent(location, callback) {
-      debugger;
-      if (_Auth2.default.isUserAuthenticated()) {
-        var data = JSON.parse(_Auth2.default.getToken());
-        window.location.href = "https://sch-admin.herokuapp.com?id=" + encodeURIComponent(data.login_id);
-      } else {
-        callback(null, _HomePage2.default);
-      }
-    }
-  }, {
-    path: '/login',
-    component: _LoginPage2.default
-  }, {
-    path: '/signup',
-    component: _SignUpPage2.default
-  }, {
-    path: '/logout',
-    onEnter: function onEnter(nextState, replace) {
-      _Auth2.default.deauthenticateUser();
+    // base component (wrapper for the whole application).
+    component: _Base2.default,
+    childRoutes: [{
+        path: '/',
+        getComponent: function getComponent(location, callback) {
+            debugger;
+            if (_Auth2.default.isUserAuthenticated()) {
+                var data = JSON.parse(_Auth2.default.getToken());
+                window.location.href = _config2.default.getParameter("adminApp") + "?id=" + encodeURIComponent(data.login_id);
+            } else {
+                callback(null, _HomePage2.default);
+            }
+        }
+    }, {
+        path: '/login',
+        component: _LoginPage2.default
+    }, {
+        path: '/signup',
+        component: _SignUpPage2.default
+    }, {
+        path: '/logout',
+        onEnter: function onEnter(nextState, replace) {
+            _Auth2.default.deauthenticateUser();
 
-      // change the current URL to /
-      replace('/');
-    }
-  }]
+            // change the current URL to /
+            replace('/');
+        }
+    }]
 };
 
 exports.default = routes;
 
-},{"./components/Base.jsx":4,"./components/HomePage.jsx":6,"./containers/DashboardPage.jsx":10,"./containers/LoginPage.jsx":11,"./containers/SignUpPage.jsx":12,"./containers/hub.jsx":13,"./modules/Auth":14}],16:[function(require,module,exports){
+},{"./components/Base.jsx":4,"./components/HomePage.jsx":6,"./config/config.jsx":9,"./containers/DashboardPage.jsx":10,"./containers/LoginPage.jsx":11,"./containers/SignUpPage.jsx":12,"./containers/hub.jsx":13,"./modules/Auth":14}],16:[function(require,module,exports){
 (function (process){
 'use strict';
 
