@@ -856,7 +856,7 @@ exports.default = SignUpForm;
 },{"material-ui/Card":25,"material-ui/RaisedButton":33,"material-ui/TextField":41,"react":510,"react-router":422}],9:[function(require,module,exports){
 'use strict';
 
-var env = 'local',
+var env = 'qa',
     config = {
 	local: {
 		protocol: 'http',
